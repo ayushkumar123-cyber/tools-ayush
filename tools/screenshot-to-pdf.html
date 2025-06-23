@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Images to PDF Converter - MultiTools</title>
+  <meta name="description" content="Convert multiple images (JPG, PNG) into a single PDF document.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    #previewContainer img {
+      max-width: 100px;
+      max-height: 100px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: .25rem;
+    }
+  </style>
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#0d6efd"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" dy=".3em">PDF</text></svg>
+          </span>
+          Images to PDF Converter
+        </h1>
+        <div class="ad-space">Ad Space (728x90)</div>
+        <div class="card p-4 shadow-sm">
+          <div class="mb-3">
+            <label for="imageInput" class="form-label">1. Select one or more images:</label>
+            <input class="form-control" type="file" id="imageInput" accept="image/*" multiple>
+          </div>
+          <div id="previewContainer" class="mb-3 border p-2 rounded bg-light" style="display:none;">
+             <p class="text-muted text-center m-2">Image Previews:</p>
+          </div>
+          <button id="convertToPdfBtn" class="btn btn-primary w-100" disabled>Convert to PDF</button>
+        </div>
+        <div class="ad-space">Ad Space (300x250)</div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <!-- jsPDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const convertToPdfBtn = document.getElementById('convertToPdfBtn');
+    let files = [];
+
+    imageInput.addEventListener('change', (e) => {
+      files = Array.from(e.target.files);
+      previewContainer.innerHTML = '<p class="text-muted text-center m-2">Image Previews:</p>'; // Reset
+      if (files.length > 0) {
+        convertToPdfBtn.disabled = false;
+        previewContainer.style.display = 'block';
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            previewContainer.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      } else {
+        convertToPdfBtn.disabled = true;
+        previewContainer.style.display = 'none';
+      }
+    });
+
+    convertToPdfBtn.addEventListener('click', async () => {
+      if (files.length === 0) return;
+      
+      convertToPdfBtn.disabled = true;
+      convertToPdfBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...';
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      
+      for (let i = 0; i < files.length; i++) {
+        if (i > 0) {
+          pdf.addPage();
+        }
+        const imgData = await readFileAsDataURL(files[i]);
+        const img = new Image();
+        img.src = imgData;
+        
+        await new Promise(resolve => img.onload = resolve);
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgRatio = img.width / img.height;
+        const pdfRatio = pdfWidth / pdfHeight;
+
+        let newWidth, newHeight;
+        if(imgRatio > pdfRatio){
+            newWidth = pdfWidth;
+            newHeight = pdfWidth / imgRatio;
+        } else {
+            newHeight = pdfHeight;
+            newWidth = pdfHeight * imgRatio;
+        }
+        
+        const x = (pdfWidth - newWidth) / 2;
+        const y = (pdfHeight - newHeight) / 2;
+
+        pdf.addImage(imgData, 'PNG', x, y, newWidth, newHeight);
+      }
+      
+      pdf.save('converted-images.pdf');
+      convertToPdfBtn.disabled = false;
+      convertToPdfBtn.textContent = 'Convert to PDF';
+    });
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html> 

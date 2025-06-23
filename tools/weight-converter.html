@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weight Converter - MultiTools</title>
+  <meta name="description" content="Convert between various units of weight, such as kilograms, grams, pounds, and ounces.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#fd7e14"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" dy=".3em">KG</text></svg>
+          </span>
+          Weight Converter
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="row align-items-center">
+            <div class="col-md-5">
+              <label for="inputValue" class="form-label">From:</label>
+              <input type="number" id="inputValue" class="form-control" value="1">
+              <select id="fromUnit" class="form-select mt-2">
+                <option value="kilogram">Kilogram</option>
+                <option value="gram">Gram</option>
+                <option value="milligram">Milligram</option>
+                <option value="pound">Pound</option>
+                <option value="ounce">Ounce</option>
+                <option value="ton">Ton</option>
+              </select>
+            </div>
+            <div class="col-md-2 text-center mt-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/></svg>
+            </div>
+            <div class="col-md-5">
+              <label for="outputValue" class="form-label">To:</label>
+              <input type="text" id="outputValue" class="form-control" readonly>
+              <select id="toUnit" class="form-select mt-2">
+                <option value="kilogram">Kilogram</option>
+                <option value="gram" selected>Gram</option>
+                <option value="milligram">Milligram</option>
+                <option value="pound">Pound</option>
+                <option value="ounce">Ounce</option>
+                <option value="ton">Ton</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    const inputValue = document.getElementById('inputValue');
+    const fromUnit = document.getElementById('fromUnit');
+    const toUnit = document.getElementById('toUnit');
+    const outputValue = document.getElementById('outputValue');
+
+    const conversionFactors = {
+      kilogram: 1,
+      gram: 0.001,
+      milligram: 0.000001,
+      pound: 0.453592,
+      ounce: 0.0283495,
+      ton: 907.185
+    };
+
+    function convert() {
+      const from = fromUnit.value;
+      const to = toUnit.value;
+      const value = parseFloat(inputValue.value);
+
+      if (isNaN(value)) {
+        outputValue.value = '';
+        return;
+      }
+
+      const valueInKg = value * conversionFactors[from];
+      const result = valueInKg / conversionFactors[to];
+      
+      outputValue.value = result.toLocaleString();
+    }
+    
+    inputValue.addEventListener('input', convert);
+    fromUnit.addEventListener('change', convert);
+    toUnit.addEventListener('change', convert);
+
+    convert();
+  </script>
+</body>
+</html> 

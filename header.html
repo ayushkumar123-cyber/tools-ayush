@@ -1,0 +1,74 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">
+      <svg viewBox="0 0 48 48" width="32" height="32" class="me-2">
+        <rect width="48" height="48" rx="10" fill="#0d6efd"/>
+        <text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" dy=".3em">MT</text>
+      </svg>
+      MultiTools
+    </a>
+    
+    <!-- Search Bar -->
+    <div class="d-none d-md-block mx-auto" style="max-width: 400px;">
+      <div class="input-group">
+        <span class="input-group-text bg-transparent border-end-0">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" class="form-control border-start-0" id="searchTools" placeholder="Search tools... (Ctrl+K)" data-tooltip="Search through all available tools">
+        <button class="btn btn-outline-secondary" type="button" id="clearSearch" style="display: none;">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    </div>
+    
+    <div class="navbar-nav ms-auto align-items-center">
+      <!-- Theme Toggle -->
+      <button class="btn btn-outline-primary me-2" id="themeToggle" data-tooltip="Toggle dark/light theme">
+        <i class="bi bi-moon"></i>
+      </button>
+      
+      <!-- Mobile Search Toggle -->
+      <button class="btn btn-outline-primary d-md-none me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch">
+        <i class="bi bi-search"></i>
+      </button>
+      
+      <!-- Navigation Links -->
+      <div class="navbar-nav">
+        <a class="nav-link" href="#image-tools" data-tooltip="Image processing tools">Image</a>
+        <a class="nav-link" href="#seo-tools" data-tooltip="SEO optimization tools">SEO</a>
+        <a class="nav-link" href="#text-tools" data-tooltip="Text manipulation tools">Text</a>
+        <a class="nav-link" href="#unit-tools" data-tooltip="Unit conversion tools">Units</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Search -->
+  <div class="collapse w-100" id="mobileSearch">
+    <div class="container py-3">
+      <div class="input-group">
+        <span class="input-group-text bg-transparent border-end-0">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" class="form-control border-start-0" placeholder="Search tools...">
+        <button class="btn btn-outline-secondary" type="button">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Results Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Search Results</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="searchResults">
+        <!-- Search results will be populated here -->
+      </div>
+    </div>
+  </div>
+</div> 

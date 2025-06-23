@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIF Maker - MultiTools</title>
+  <meta name="description" content="Create an animated GIF from multiple images. Set frame delay and download your GIF for free.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    #previewContainer img {
+        max-width: 100px;
+        max-height: 100px;
+        margin: 5px;
+        border: 1px solid #ddd;
+        object-fit: cover;
+    }
+    .progress-container {
+        display: none;
+        margin: 20px 0;
+    }
+    .frame-counter {
+        font-size: 14px;
+        color: #666;
+        margin-top: 10px;
+    }
+    .error-message {
+        color: #dc3545;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        display: none;
+    }
+  </style>
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#0d6efd"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" dy=".3em">GIF</text></svg>
+          </span>
+          GIF Maker
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="mb-3">
+            <label for="imageInput" class="form-label">1. Select multiple images (frames):</label>
+            <input class="form-control" type="file" id="imageInput" accept="image/*" multiple>
+            <div class="form-text">Select 2 or more images to create an animated GIF</div>
+          </div>
+          
+          <div id="previewContainer" class="mb-3 border p-2 rounded bg-light" style="display:none;">
+            <div class="frame-counter">Selected frames: <span id="frameCount">0</span></div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="delayInput" class="form-label">2. Delay between frames (ms):</label>
+            <input type="number" class="form-control" id="delayInput" value="500" min="100" max="5000" placeholder="e.g., 500">
+            <div class="form-text">Recommended: 200-1000ms for smooth animation</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="qualityInput" class="form-label">3. Quality (1-10):</label>
+            <input type="range" class="form-range" id="qualityInput" min="1" max="10" value="7">
+            <div class="d-flex justify-content-between">
+              <small>Smaller file</small>
+              <small id="qualityValue">7</small>
+              <small>Better quality</small>
+            </div>
+          </div>
+          
+          <button id="generateBtn" class="btn btn-primary w-100" disabled>
+            <span id="generateText">Generate GIF</span>
+            <span id="generatingText" style="display:none;">
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Generating GIF...
+            </span>
+          </button>
+          
+          <div class="error-message" id="errorMessage"></div>
+          
+          <div class="progress-container" id="progressContainer">
+            <div class="progress mb-2">
+              <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%"></div>
+            </div>
+            <div class="text-center" id="progressText">Processing frames...</div>
+          </div>
+          
+          <div id="result" class="mt-4 text-center" style="display:none;">
+            <h4 class="mb-3">Your GIF is ready!</h4>
+            <img id="resultImage" src="" alt="Generated GIF" class="img-fluid rounded mb-3 border">
+            <div class="mb-3">
+              <a id="downloadLink" class="btn btn-success me-2" href="#" download="animation.gif">
+                <svg width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Download GIF
+              </a>
+              <button id="newGifBtn" class="btn btn-outline-primary">Create New GIF</button>
+            </div>
+          </div>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <!-- gif.js Library -->
+  <script src="../assets/js/gif.js"></script>
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const frameCount = document.getElementById('frameCount');
+    const delayInput = document.getElementById('delayInput');
+    const qualityInput = document.getElementById('qualityInput');
+    const qualityValue = document.getElementById('qualityValue');
+    const generateBtn = document.getElementById('generateBtn');
+    const generateText = document.getElementById('generateText');
+    const generatingText = document.getElementById('generatingText');
+    const resultDiv = document.getElementById('result');
+    const resultImage = document.getElementById('resultImage');
+    const downloadLink = document.getElementById('downloadLink');
+    const newGifBtn = document.getElementById('newGifBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const errorMessage = document.getElementById('errorMessage');
+
+    let files = [];
+    let gif = null;
+
+    // Update quality display
+    qualityInput.addEventListener('input', () => {
+      qualityValue.textContent = qualityInput.value;
+    });
+
+    imageInput.addEventListener('change', (e) => {
+      files = Array.from(e.target.files);
+      previewContainer.innerHTML = '<div class="frame-counter">Selected frames: <span id="frameCount">0</span></div>';
+      document.getElementById('frameCount').textContent = files.length;
+      hideError();
+      
+      if (files.length > 0) {
+        frameCount.textContent = files.length;
+        generateBtn.disabled = files.length < 2;
+        previewContainer.style.display = 'block';
+        
+        // Show preview of selected images
+        files.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.title = `Frame ${index + 1}: ${file.name}`;
+            previewContainer.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      } else {
+        generateBtn.disabled = true;
+        previewContainer.style.display = 'none';
+      }
+    });
+
+    generateBtn.addEventListener('click', async () => {
+      if (files.length < 2) {
+        showError('Please select at least two images to create a GIF.');
+        return;
+      }
+      
+      try {
+        await generateGIF();
+      } catch (error) {
+        showError('Error generating GIF: ' + error.message);
+        resetUI(true);
+      }
+    });
+
+    newGifBtn.addEventListener('click', () => {
+      resetUI(true);
+      imageInput.value = '';
+      files = [];
+      previewContainer.innerHTML = '<div class="frame-counter">Selected frames: <span id="frameCount">0</span></div>';
+      previewContainer.style.display = 'none';
+      resultDiv.style.display = 'none';
+      generateBtn.disabled = true;
+    });
+
+    async function generateGIF() {
+      // Reset UI
+      hideError();
+      resultDiv.style.display = 'none';
+      progressContainer.style.display = 'block';
+      generateBtn.disabled = true;
+      generateText.style.display = 'none';
+      generatingText.style.display = 'inline';
+      
+      const delay = parseInt(delayInput.value) || 500;
+      // Invert quality: gif.js uses 1=best, 10=worst. Our slider is opposite.
+      const quality = 11 - (parseInt(qualityInput.value) || 7); 
+      
+      try {
+        // Get dimensions from the first image to set GIF size
+        const firstImageCanvas = await loadImageToCanvas(files[0]);
+        const { width, height } = firstImageCanvas;
+
+        // Create new GIF instance with local worker script
+        gif = new GIF({
+          workers: 2,
+          quality: quality,
+          workerScript: '../assets/js/gif.worker.js',
+          width: width,
+          height: height
+        });
+
+        let processedFrames = 0;
+        const totalFrames = files.length;
+
+        // The 'progress' event reports on the rendering process (0 to 1)
+        // We map this to the second half of our progress bar (50-100%)
+        gif.on('progress', function(p) {
+          const renderProgress = 50 + Math.round(p * 50);
+          progressBar.style.width = renderProgress + '%';
+          progressText.textContent = `Rendering: ${renderProgress}%`;
+        });
+
+        // Add the first frame (which is already processed)
+        gif.addFrame(firstImageCanvas, { delay: delay });
+        processedFrames++;
+        progressText.textContent = `Adding frame ${processedFrames}/${totalFrames}`;
+        progressBar.style.width = Math.round((processedFrames / totalFrames) * 50) + '%';
+        
+        // Process subsequent images
+        for (let i = 1; i < files.length; i++) {
+            // Pass target dimensions to ensure all frames are the same size
+            const canvas = await loadImageToCanvas(files[i], width, height);
+            gif.addFrame(canvas, { delay: delay });
+            processedFrames++;
+            
+            // Update progress for frame processing (first half of progress bar)
+            const frameProgress = Math.round((processedFrames / totalFrames) * 50);
+            progressBar.style.width = frameProgress + '%';
+            progressText.textContent = `Adding frame ${processedFrames}/${totalFrames}`;
+        }
+
+        // Start rendering
+        progressText.textContent = 'Rendering GIF...';
+        
+        gif.on('finished', function(blob) {
+          const url = URL.createObjectURL(blob);
+          resultImage.src = url;
+          downloadLink.href = url;
+          
+          // Hide progress, show result
+          progressContainer.style.display = 'none';
+          resultDiv.style.display = 'block';
+          resetUI(false); // Keep generate button disabled until new GIF
+        });
+
+        gif.render();
+
+      } catch (error) {
+          showError(`Error generating GIF: ${error.message}`);
+          resetUI(true);
+      }
+    }
+
+    function loadImageToCanvas(file, targetWidth, targetHeight) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const objectURL = URL.createObjectURL(file);
+
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let drawWidth, drawHeight;
+
+            if (targetWidth && targetHeight) {
+              // If target dimensions are provided, use them for the canvas
+              canvas.width = targetWidth;
+              canvas.height = targetHeight;
+              drawWidth = targetWidth;
+              drawHeight = targetHeight;
+            } else {
+              // Otherwise, determine dimensions from the image, with a max cap
+              const maxWidth = 800;
+              const maxHeight = 600;
+              let { width, height } = img;
+              
+              if (width > maxWidth || height > maxHeight) {
+                const ratio = Math.min(maxWidth / width, maxHeight / height);
+                drawWidth = Math.floor(width * ratio);
+                drawHeight = Math.floor(height * ratio);
+              } else {
+                drawWidth = width;
+                drawHeight = height;
+              }
+              canvas.width = drawWidth;
+              canvas.height = drawHeight;
+            }
+            
+            // Draw image on canvas, fitting it to the canvas dimensions
+            ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
+            URL.revokeObjectURL(objectURL); // Clean up memory
+            resolve(canvas);
+          } catch (error) {
+            URL.revokeObjectURL(objectURL);
+            reject(error);
+          }
+        };
+        
+        img.onerror = () => {
+          URL.revokeObjectURL(objectURL);
+          reject(new Error('Failed to load image. It may be corrupt or in an unsupported format.'));
+        };
+
+        img.src = objectURL;
+      });
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+    }
+
+    function hideError() {
+      errorMessage.style.display = 'none';
+    }
+
+    function resetUI(enableGenerate = true) {
+      generateBtn.disabled = !enableGenerate || files.length < 2;
+      generateText.style.display = 'inline';
+      generatingText.style.display = 'none';
+      progressContainer.style.display = 'none';
+      progressBar.style.width = '0%';
+    }
+  </script>
+</body>
+</html> 

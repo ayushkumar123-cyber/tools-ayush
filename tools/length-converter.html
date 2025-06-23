@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Length Converter - MultiTools</title>
+  <meta name="description" content="Convert between various units of length, such as meters, kilometers, miles, feet, and inches.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-3">
+            <svg viewBox="0 0 48 48" width="48" height="48" class="interactive-element">
+              <rect width="48" height="48" rx="10" fill="#fd7e14"/>
+              <text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" dy=".3em">LEN</text>
+            </svg>
+          </span>
+          Length Converter
+          <span class="badge bg-primary ms-3">Real-time</span>
+        </h1>
+        
+        <div data-include="../ads/admob-banner.html"></div>
+        
+        <div class="converter-container">
+          <div class="row align-items-center">
+            <div class="col-md-5">
+              <label for="inputValue" class="form-label">
+                <i class="bi bi-arrow-right-circle me-2"></i>From:
+              </label>
+              <input type="number" id="inputValue" class="form-control" value="1" step="any" data-tooltip="Enter the value to convert">
+              <select id="fromUnit" class="form-select mt-2" data-tooltip="Select the source unit">
+                <option value="meter">Meter (m)</option>
+                <option value="kilometer">Kilometer (km)</option>
+                <option value="centimeter">Centimeter (cm)</option>
+                <option value="millimeter">Millimeter (mm)</option>
+                <option value="mile">Mile (mi)</option>
+                <option value="yard">Yard (yd)</option>
+                <option value="foot">Foot (ft)</option>
+                <option value="inch">Inch (in)</option>
+              </select>
+            </div>
+            
+            <div class="col-md-2 text-center mt-4">
+              <button class="btn btn-outline-primary btn-sm" id="swapUnits" data-tooltip="Swap units">
+                <i class="bi bi-arrow-left-right"></i>
+              </button>
+            </div>
+            
+            <div class="col-md-5">
+              <label for="outputValue" class="form-label">
+                <i class="bi bi-arrow-left-circle me-2"></i>To:
+              </label>
+              <div class="input-group">
+                <input type="text" id="outputValue" class="form-control result-display" readonly>
+                <button class="btn btn-outline-success" type="button" id="copyResult" data-tooltip="Copy result">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              <select id="toUnit" class="form-select mt-2" data-tooltip="Select the target unit">
+                <option value="meter">Meter (m)</option>
+                <option value="kilometer" selected>Kilometer (km)</option>
+                <option value="centimeter">Centimeter (cm)</option>
+                <option value="millimeter">Millimeter (mm)</option>
+                <option value="mile">Mile (mi)</option>
+                <option value="yard">Yard (yd)</option>
+                <option value="foot">Foot (ft)</option>
+                <option value="inch">Inch (in)</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Quick Conversion Buttons -->
+          <div class="row mt-4">
+            <div class="col-12">
+              <h6 class="text-muted mb-3">
+                <i class="bi bi-lightning me-2"></i>Quick Conversions:
+              </h6>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-outline-secondary quick-convert" data-from="meter" data-to="foot">m → ft</button>
+                <button class="btn btn-sm btn-outline-secondary quick-convert" data-from="kilometer" data-to="mile">km → mi</button>
+                <button class="btn btn-sm btn-outline-secondary quick-convert" data-from="inch" data-to="centimeter">in → cm</button>
+                <button class="btn btn-sm btn-outline-secondary quick-convert" data-from="yard" data-to="meter">yd → m</button>
+                <button class="btn btn-sm btn-outline-secondary quick-convert" data-from="foot" data-to="meter">ft → m</button>
+                <button class="btn btn-sm btn-outline-secondary quick-convert" data-from="mile" data-to="kilometer">mi → km</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Conversion History -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="mb-0">
+              <i class="bi bi-clock-history me-2"></i>Recent Conversions
+            </h6>
+          </div>
+          <div class="card-body">
+            <div id="conversionHistory" class="small">
+              <!-- History items will be added here -->
+            </div>
+          </div>
+        </div>
+        
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    const inputValue = document.getElementById('inputValue');
+    const fromUnit = document.getElementById('fromUnit');
+    const toUnit = document.getElementById('toUnit');
+    const outputValue = document.getElementById('outputValue');
+    const copyResult = document.getElementById('copyResult');
+    const swapUnits = document.getElementById('swapUnits');
+    const quickConvertButtons = document.querySelectorAll('.quick-convert');
+    const conversionHistory = document.getElementById('conversionHistory');
+
+    const conversionFactors = {
+      meter: 1,
+      kilometer: 1000,
+      centimeter: 0.01,
+      millimeter: 0.001,
+      mile: 1609.34,
+      yard: 0.9144,
+      foot: 0.3048,
+      inch: 0.0254
+    };
+
+    const unitLabels = {
+      meter: 'm',
+      kilometer: 'km',
+      centimeter: 'cm',
+      millimeter: 'mm',
+      mile: 'mi',
+      yard: 'yd',
+      foot: 'ft',
+      inch: 'in'
+    };
+
+    function convert() {
+      const from = fromUnit.value;
+      const to = toUnit.value;
+      const value = parseFloat(inputValue.value);
+
+      if (isNaN(value)) {
+        outputValue.value = '';
+        outputValue.classList.remove('success');
+        return;
+      }
+
+      const valueInMeters = value * conversionFactors[from];
+      const result = valueInMeters / conversionFactors[to];
+      
+      outputValue.value = result.toLocaleString(undefined, {
+        maximumFractionDigits: 6,
+        minimumFractionDigits: 0
+      });
+      
+      outputValue.classList.add('success');
+      
+      // Add to history
+      addToHistory(value, from, result, to);
+    }
+    
+    function addToHistory(fromValue, fromUnit, toValue, toUnit) {
+      const historyItem = document.createElement('div');
+      historyItem.className = 'd-flex justify-content-between align-items-center py-2 border-bottom';
+      historyItem.innerHTML = `
+        <span>${fromValue} ${unitLabels[fromUnit]} = ${toValue} ${unitLabels[toUnit]}</span>
+        <button class="btn btn-sm btn-outline-primary" onclick="loadConversion('${fromValue}', '${fromUnit}', '${toUnit}')">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      `;
+      
+      conversionHistory.insertBefore(historyItem, conversionHistory.firstChild);
+      
+      // Keep only last 5 items
+      const items = conversionHistory.querySelectorAll('.d-flex');
+      if (items.length > 5) {
+        items[items.length - 1].remove();
+      }
+    }
+    
+    function loadConversion(value, from, to) {
+      inputValue.value = value;
+      fromUnit.value = from;
+      toUnit.value = to;
+      convert();
+    }
+    
+    function swapUnits() {
+      const tempValue = inputValue.value;
+      const tempUnit = fromUnit.value;
+      
+      inputValue.value = outputValue.value;
+      fromUnit.value = toUnit.value;
+      toUnit.value = tempUnit;
+      
+      convert();
+    }
+    
+    function copyToClipboard() {
+      const text = `${inputValue.value} ${unitLabels[fromUnit.value]} = ${outputValue.value} ${unitLabels[toUnit.value]}`;
+      navigator.clipboard.writeText(text).then(() => {
+        copyResult.innerHTML = '<i class="bi bi-check"></i>';
+        copyResult.classList.add('btn-success');
+        copyResult.classList.remove('btn-outline-success');
+        
+        setTimeout(() => {
+          copyResult.innerHTML = '<i class="bi bi-clipboard"></i>';
+          copyResult.classList.remove('btn-success');
+          copyResult.classList.add('btn-outline-success');
+        }, 2000);
+      });
+    }
+    
+    // Event listeners
+    inputValue.addEventListener('input', convert);
+    fromUnit.addEventListener('change', convert);
+    toUnit.addEventListener('change', convert);
+    copyResult.addEventListener('click', copyToClipboard);
+    swapUnits.addEventListener('click', swapUnits);
+    
+    // Quick conversion buttons
+    quickConvertButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const from = this.dataset.from;
+        const to = this.dataset.to;
+        
+        fromUnit.value = from;
+        toUnit.value = to;
+        convert();
+        
+        // Highlight the button
+        quickConvertButtons.forEach(btn => btn.classList.remove('btn-primary', 'btn-outline-primary'));
+        this.classList.remove('btn-outline-secondary');
+        this.classList.add('btn-primary');
+        
+        setTimeout(() => {
+          this.classList.remove('btn-primary');
+          this.classList.add('btn-outline-secondary');
+        }, 1000);
+      });
+    });
+    
+    // Initialize
+    convert();
+    
+    // Add some sample history
+    setTimeout(() => {
+      addToHistory(1, 'meter', 3.28084, 'foot');
+      addToHistory(5, 'kilometer', 3.10686, 'mile');
+    }, 1000);
+  </script>
+</body>
+</html> 

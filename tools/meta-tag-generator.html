@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta Tag Generator - MultiTools</title>
+  <meta name="description" content="Generate essential SEO meta tags for your website to improve search engine rankings.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#198754"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="12" font-family="Arial" dy=".3em">META</text></svg>
+          </span>
+          Meta Tag Generator
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="title" class="form-label">Site Title</label>
+              <input type="text" id="title" class="form-control" placeholder="Your Website Title">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="description" class="form-label">Site Description</label>
+              <input type="text" id="description" class="form-control" placeholder="A brief description of your site.">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="keywords" class="form-label">Keywords (comma-separated)</label>
+              <input type="text" id="keywords" class="form-control" placeholder="keyword1, keyword2, keyword3">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="author" class="form-label">Author</label>
+              <input type="text" id="author" class="form-control" placeholder="Author's Name">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="robots" class="form-label">Robots Meta Tag</label>
+              <select id="robots" class="form-select">
+                <option value="index, follow">Index, Follow</option>
+                <option value="noindex, nofollow">No Index, No Follow</option>
+                <option value="index, nofollow">Index, No Follow</option>
+                <option value="noindex, follow">No Index, Follow</option>
+              </select>
+            </div>
+          </div>
+
+          <hr>
+
+          <h4 class="mb-3">Generated Meta Tags:</h4>
+          <pre class="bg-light p-3 rounded"><code>&lt;!-- Required meta tags --&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+
+<span id="output"></span></code></pre>
+          <button id="copyBtn" class="btn btn-secondary mt-2">Copy to Clipboard</button>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    const keywordsInput = document.getElementById('keywords');
+    const authorInput = document.getElementById('author');
+    const robotsInput = document.getElementById('robots');
+    const output = document.getElementById('output');
+    const copyBtn = document.getElementById('copyBtn');
+
+    const inputs = [titleInput, descriptionInput, keywordsInput, authorInput, robotsInput];
+
+    function generateMetaTags() {
+      const title = titleInput.value;
+      const description = descriptionInput.value;
+      const keywords = keywordsInput.value;
+      const author = authorInput.value;
+      const robots = robotsInput.value;
+      
+      let tags = '';
+      if (title) tags += `&lt;title&gt;${title}&lt;/title&gt;\n`;
+      if (description) tags += `&lt;meta name="description" content="${description}"&gt;\n`;
+      if (keywords) tags += `&lt;meta name="keywords" content="${keywords}"&gt;\n`;
+      if (author) tags += `&lt;meta name="author" content="${author}"&gt;\n`;
+      tags += `&lt;meta name="robots" content="${robots}"&gt;\n`;
+      
+      output.innerHTML = tags;
+    }
+    
+    inputs.forEach(input => input.addEventListener('input', generateMetaTags));
+
+    copyBtn.addEventListener('click', () => {
+      const codeToCopy = document.querySelector('pre code').innerText;
+      navigator.clipboard.writeText(codeToCopy).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy to Clipboard', 2000);
+      });
+    });
+
+    // Initial generation
+    generateMetaTags();
+  </script>
+</body>
+</html> 

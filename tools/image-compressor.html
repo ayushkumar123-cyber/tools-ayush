@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compressor - MultiTools</title>
+  <meta name="description" content="Compress JPG, PNG, and WebP images to reduce file size without significant quality loss. Free and fast online tool.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#0d6efd"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="12" font-family="Arial" dy=".3em">COMP</text></svg>
+          </span>
+          Image Compressor
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="mb-3">
+            <label for="imageInput" class="form-label">1. Select an image to compress:</label>
+            <input class="form-control" type="file" id="imageInput" accept="image/jpeg, image/png, image/webp">
+          </div>
+          <div class="mb-3">
+            <label for="qualityRange" class="form-label">2. Compression Level (Lower = smaller size):</label>
+            <input type="range" class="form-range" min="0.1" max="1.0" step="0.05" value="0.8" id="qualityRange">
+            <div class="text-center" id="qualityValue">80%</div>
+          </div>
+          <button id="compressBtn" class="btn btn-primary w-100" disabled>Compress Image</button>
+          <div id="result" class="mt-4" style="display:none;">
+            <h4 class="mb-3 text-center">Compression Successful!</h4>
+            <div class="row text-center">
+              <div class="col-6">
+                <strong>Original Size:</strong>
+                <div id="originalSize"></div>
+              </div>
+              <div class="col-6">
+                <strong>Compressed Size:</strong>
+                <div id="compressedSize" class="text-success fw-bold"></div>
+              </div>
+            </div>
+            <div class="text-center mt-3">
+                <img id="resultImage" src="" alt="Compressed Image" class="img-fluid rounded mb-3" style="max-height: 300px;">
+                <a id="downloadLink" class="btn btn-success" href="#" download="compressed.jpg">Download Compressed Image</a>
+            </div>
+          </div>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const qualityRange = document.getElementById('qualityRange');
+    const qualityValue = document.getElementById('qualityValue');
+    const compressBtn = document.getElementById('compressBtn');
+    const resultDiv = document.getElementById('result');
+    const resultImage = document.getElementById('resultImage');
+    const downloadLink = document.getElementById('downloadLink');
+    const originalSize = document.getElementById('originalSize');
+    const compressedSize = document.getElementById('compressedSize');
+
+    let file = null;
+
+    imageInput.addEventListener('change', (e) => {
+      file = e.target.files[0];
+      if (file) {
+        compressBtn.disabled = false;
+        resultDiv.style.display = 'none';
+        originalSize.textContent = (file.size / 1024).toFixed(2) + ' KB';
+      } else {
+        compressBtn.disabled = true;
+      }
+    });
+
+    qualityRange.addEventListener('input', () => {
+      qualityValue.textContent = Math.round(qualityRange.value * 100) + '%';
+    });
+
+    compressBtn.addEventListener('click', () => {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          const quality = parseFloat(qualityRange.value);
+          const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+          const dataUrl = canvas.toDataURL(mimeType, quality);
+          
+          resultImage.src = dataUrl;
+          downloadLink.href = dataUrl;
+          
+          const blob = dataURLtoBlob(dataUrl);
+          compressedSize.textContent = (blob.size / 1024).toFixed(2) + ' KB';
+          downloadLink.download = `compressed-${file.name}`;
+          
+          resultDiv.style.display = 'block';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    function dataURLtoBlob(dataurl) {
+        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], {type:mime});
+    }
+  </script>
+</body>
+</html> 

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robots.txt Generator - MultiTools</title>
+  <meta name="description" content="Create a robots.txt file to manage web crawler access to your site.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#198754"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="12" font-family="Arial" dy=".3em">ROBOT</text></svg>
+          </span>
+          Robots.txt Generator
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Default for all bots:</label>
+              <select id="defaultPolicy" class="form-select">
+                <option value="allow" selected>Allow All</option>
+                <option value="disallow">Disallow All</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="sitemap" class="form-label">Sitemap URL (optional):</label>
+              <input type="url" id="sitemap" class="form-control" placeholder="https://example.com/sitemap.xml">
+            </div>
+          </div>
+          
+          <div id="rulesContainer">
+            <!-- Dynamic rules will be added here -->
+          </div>
+          <button id="addRuleBtn" class="btn btn-outline-secondary btn-sm mt-2">Add Rule for Specific Bot</button>
+
+          <hr class="my-4">
+
+          <h4 class="mb-3">Generated robots.txt:</h4>
+          <pre class="bg-light p-3 rounded"><code id="output"></code></pre>
+          <button id="copyBtn" class="btn btn-secondary mt-2">Copy to Clipboard</button>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    const defaultPolicy = document.getElementById('defaultPolicy');
+    const sitemapInput = document.getElementById('sitemap');
+    const rulesContainer = document.getElementById('rulesContainer');
+    const addRuleBtn = document.getElementById('addRuleBtn');
+    const output = document.getElementById('output');
+    const copyBtn = document.getElementById('copyBtn');
+
+    function generateRobotsTxt() {
+      let content = 'User-agent: *\n';
+      content += defaultPolicy.value === 'allow' ? 'Disallow:\n' : 'Disallow: /\n';
+      
+      const rules = document.querySelectorAll('.rule-group');
+      rules.forEach(rule => {
+        const bot = rule.querySelector('.bot-name').value || '*';
+        const path = rule.querySelector('.path-name').value;
+        const policy = rule.querySelector('.path-policy').value;
+        if(path) {
+            content += `\nUser-agent: ${bot}\n`;
+            content += `${policy}: ${path}\n`;
+        }
+      });
+
+      const sitemap = sitemapInput.value;
+      if (sitemap) {
+        content += `\nSitemap: ${sitemap}\n`;
+      }
+      
+      output.textContent = content;
+    }
+
+    function addRule() {
+        const ruleId = Date.now();
+        const ruleDiv = document.createElement('div');
+        ruleDiv.className = 'rule-group border p-3 mt-3 rounded';
+        ruleDiv.innerHTML = `
+            <div class="row">
+                <div class="col-10">
+                    <h6>Specific Rule</h6>
+                </div>
+                <div class="col-2 text-end">
+                    <button class="btn-close" onclick="this.parentElement.parentElement.parentElement.remove(); generateRobotsTxt();"></button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <label class="form-label">Bot</label>
+                    <input type="text" class="form-control form-control-sm bot-name" placeholder="e.g., Googlebot">
+                </div>
+                <div class="col-md-5 mb-2">
+                    <label class="form-label">Path</label>
+                    <input type="text" class="form-control form-control-sm path-name" placeholder="/private/">
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label">Action</label>
+                    <select class="form-select form-select-sm path-policy">
+                        <option value="Disallow">Disallow</option>
+                        <option value="Allow">Allow</option>
+                    </select>
+                </div>
+            </div>`;
+        rulesContainer.appendChild(ruleDiv);
+        
+        ruleDiv.querySelectorAll('input, select').forEach(el => el.addEventListener('input', generateRobotsTxt));
+    }
+
+    addRuleBtn.addEventListener('click', addRule);
+    defaultPolicy.addEventListener('input', generateRobotsTxt);
+    sitemapInput.addEventListener('input', generateRobotsTxt);
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(output.textContent).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy to Clipboard', 2000);
+      });
+    });
+
+    generateRobotsTxt();
+  </script>
+</body>
+</html> 

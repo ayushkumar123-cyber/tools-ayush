@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sitemap Generator - MultiTools</title>
+  <meta name="description" content="Create an XML sitemap for your website by listing your URLs.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#198754"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="12" font-family="Arial" dy=".3em">MAP</text></svg>
+          </span>
+          Sitemap Generator
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="mb-3">
+            <label for="urlList" class="form-label">Enter your website URLs (one per line):</label>
+            <textarea id="urlList" class="form-control" rows="10" placeholder="https://example.com/\nhttps://example.com/about\nhttps://example.com/contact"></textarea>
+          </div>
+          <button id="generateBtn" class="btn btn-primary w-100">Generate Sitemap</button>
+
+          <div id="result" class="mt-4" style="display:none;">
+            <h4 class="mb-3">Generated sitemap.xml:</h4>
+            <pre class="bg-light p-3 rounded"><code id="output"></code></pre>
+            <button id="copyBtn" class="btn btn-secondary mt-2">Copy to Clipboard</button>
+            <a id="downloadLink" class="btn btn-success mt-2" href="#" download="sitemap.xml">Download sitemap.xml</a>
+          </div>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    const urlListInput = document.getElementById('urlList');
+    const generateBtn = document.getElementById('generateBtn');
+    const resultDiv = document.getElementById('result');
+    const output = document.getElementById('output');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadLink = document.getElementById('downloadLink');
+
+    function escapeXml(unsafe) {
+        return unsafe.replace(/[<>&'"]/g, function (c) {
+            switch (c) {
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '&': return '&amp;';
+                case '\'': return '&apos;';
+                case '"': return '&quot;';
+            }
+        });
+    }
+
+    generateBtn.addEventListener('click', () => {
+      const urls = urlListInput.value.split('\\n').filter(url => url.trim() !== '');
+      if (urls.length === 0) {
+        alert('Please enter at least one URL.');
+        return;
+      }
+      
+      const today = new Date().toISOString().split('T')[0];
+      let sitemapContent = '<?xml version="1.0" encoding="UTF-8"?>\\n';
+      sitemapContent += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\\n';
+
+      urls.forEach(url => {
+        sitemapContent += '  <url>\\n';
+        sitemapContent += `    <loc>${escapeXml(url.trim())}</loc>\\n`;
+        sitemapContent += `    <lastmod>${today}</lastmod>\\n`;
+        sitemapContent += '  </url>\\n';
+      });
+
+      sitemapContent += '</urlset>';
+      
+      output.textContent = sitemapContent;
+      resultDiv.style.display = 'block';
+
+      const blob = new Blob([sitemapContent], { type: 'application/xml' });
+      downloadLink.href = URL.createObjectURL(blob);
+    });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(output.textContent).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy to Clipboard', 2000);
+      });
+    });
+  </script>
+</body>
+</html> 

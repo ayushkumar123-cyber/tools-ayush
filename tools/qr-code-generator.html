@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator - MultiTools</title>
+  <meta name="description" content="Generate a QR code from any text or URL. Customize and download for free.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#0d6efd"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="16" font-family="Arial" dy=".3em">QR</text></svg>
+          </span>
+          QR Code Generator
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="mb-3">
+            <label for="textInput" class="form-label">Enter text or URL to encode:</label>
+            <textarea id="textInput" class="form-control" rows="4" placeholder="e.g., https://www.example.com"></textarea>
+          </div>
+          <button id="generateBtn" class="btn btn-primary w-100">Generate QR Code</button>
+          <div id="result" class="mt-4 text-center" style="display:none;">
+            <h4 class="mb-3">Your QR Code:</h4>
+            <div id="qrcode" class="d-flex justify-content-center mb-3"></div>
+            <a id="downloadLink" class="btn btn-success" href="#" download="qrcode.png">Download PNG</a>
+          </div>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <!-- QR Code Generator Library -->
+  <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+  <script>
+    const textInput = document.getElementById('textInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const resultDiv = document.getElementById('result');
+    const qrcodeContainer = document.getElementById('qrcode');
+    const downloadLink = document.getElementById('downloadLink');
+    let qrcode;
+
+    generateBtn.addEventListener('click', () => {
+      const text = textInput.value;
+      if (text.trim() === '') {
+        alert('Please enter text or a URL.');
+        return;
+      }
+
+      // Clear previous QR code
+      qrcodeContainer.innerHTML = '';
+      
+      qrcode = new QRCode(qrcodeContainer, {
+        text: text,
+        width: 256,
+        height: 256,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
+      
+      resultDiv.style.display = 'block';
+
+      // Create download link
+      setTimeout(() => {
+        const dataUrl = qrcodeContainer.querySelector('img').src;
+        downloadLink.href = dataUrl;
+      }, 50);
+    });
+  </script>
+</body>
+</html> 

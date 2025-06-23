@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Resizer - MultiTools</title>
+  <meta name="description" content="Resize any image online. Specify new width and height to resize your images for free.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#0d6efd"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="12" font-family="Arial" dy=".3em">RESIZE</text></svg>
+          </span>
+          Image Resizer
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="mb-3">
+            <label for="imageInput" class="form-label">1. Select an image:</label>
+            <input class="form-control" type="file" id="imageInput" accept="image/*">
+          </div>
+          <div class="row mb-3">
+            <div class="col">
+              <label for="widthInput" class="form-label">2. New Width (px):</label>
+              <input type="number" class="form-control" id="widthInput" placeholder="e.g., 800">
+            </div>
+            <div class="col">
+              <label for="heightInput" class="form-label">3. New Height (px):</label>
+              <input type="number" class="form-control" id="heightInput" placeholder="e.g., 600">
+            </div>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="aspectRatioCheck" checked>
+            <label class="form-check-label" for="aspectRatioCheck">
+              Maintain aspect ratio
+            </label>
+          </div>
+          <button id="resizeBtn" class="btn btn-primary w-100" disabled>Resize Image</button>
+          <div id="result" class="mt-4 text-center" style="display:none;">
+            <h4 class="mb-3">Resize Successful!</h4>
+            <img id="resultImage" src="" alt="Resized Image" class="img-fluid rounded mb-3" style="max-height: 300px;">
+            <a id="downloadLink" class="btn btn-success" href="#" download="resized.png">Download Resized Image</a>
+          </div>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const aspectRatioCheck = document.getElementById('aspectRatioCheck');
+    const resizeBtn = document.getElementById('resizeBtn');
+    const resultDiv = document.getElementById('result');
+    const resultImage = document.getElementById('resultImage');
+    const downloadLink = document.getElementById('downloadLink');
+
+    let file = null;
+    let originalWidth = 0;
+    let originalHeight = 0;
+    
+    imageInput.addEventListener('change', (e) => {
+      file = e.target.files[0];
+      if (file) {
+        resizeBtn.disabled = false;
+        resultDiv.style.display = 'none';
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            originalWidth = img.width;
+            originalHeight = img.height;
+            widthInput.value = originalWidth;
+            heightInput.value = originalHeight;
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        resizeBtn.disabled = true;
+      }
+    });
+
+    widthInput.addEventListener('input', () => {
+      if (aspectRatioCheck.checked) {
+        heightInput.value = Math.round((widthInput.value / originalWidth) * originalHeight);
+      }
+    });
+
+    heightInput.addEventListener('input', () => {
+      if (aspectRatioCheck.checked) {
+        widthInput.value = Math.round((heightInput.value / originalHeight) * originalWidth);
+      }
+    });
+
+    resizeBtn.addEventListener('click', () => {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const newWidth = parseInt(widthInput.value);
+          const newHeight = parseInt(heightInput.value);
+          
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+          const dataUrl = canvas.toDataURL(file.type);
+          
+          resultImage.src = dataUrl;
+          downloadLink.href = dataUrl;
+          downloadLink.download = `resized-${file.name}`;
+          resultDiv.style.display = 'block';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html> 

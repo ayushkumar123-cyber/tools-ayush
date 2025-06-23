@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebP to PNG Converter - MultiTools</title>
+  <meta name="description" content="Convert WebP images to PNG format online. Free and fast converter.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div data-include="../header.html"></div>
+
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h1 class="mb-4 d-flex align-items-center">
+          <span class="me-2">
+            <svg viewBox="0 0 48 48" width="40" height="40"><rect width="48" height="48" rx="10" fill="#0d6efd"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="12" font-family="Arial" dy=".3em">WEBP</text></svg>
+          </span>
+          WebP to PNG Converter
+        </h1>
+        <div data-include="../ads/admob-banner.html"></div>
+        <div class="card p-4 shadow-sm">
+          <div class="mb-3">
+            <label for="imageInput" class="form-label">1. Select a WebP image:</label>
+            <input class="form-control" type="file" id="imageInput" accept="image/webp">
+          </div>
+          <button id="convertBtn" class="btn btn-primary w-100" disabled>Convert to PNG</button>
+          <div id="result" class="mt-4 text-center" style="display:none;">
+            <h4 class="mb-3">Conversion Successful!</h4>
+            <img id="resultImage" src="" alt="Converted PNG Image" class="img-fluid rounded mb-3" style="max-height: 300px;">
+            <a id="downloadLink" class="btn btn-success" href="#" download="converted.png">Download PNG</a>
+          </div>
+        </div>
+        <div data-include="../ads/admob-banner.html"></div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="../footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    // This script is identical to the Image to PNG converter, as the core logic is the same.
+    const imageInput = document.getElementById('imageInput');
+    const convertBtn = document.getElementById('convertBtn');
+    const resultDiv = document.getElementById('result');
+    const resultImage = document.getElementById('resultImage');
+    const downloadLink = document.getElementById('downloadLink');
+
+    let file = null;
+
+    imageInput.addEventListener('change', (e) => {
+      file = e.target.files[0];
+      if (file) {
+        convertBtn.disabled = false;
+        resultDiv.style.display = 'none';
+      } else {
+        convertBtn.disabled = true;
+      }
+    });
+
+    convertBtn.addEventListener('click', () => {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          const dataUrl = canvas.toDataURL('image/png');
+          
+          resultImage.src = dataUrl;
+          downloadLink.href = dataUrl;
+          downloadLink.download = file.name.replace(/\.webp$/i, '.png');
+          resultDiv.style.display = 'block';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html> 

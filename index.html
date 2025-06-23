@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MultiTools - 100+ Free Online Tools</title>
+  <meta name="description" content="100+ free online tools: image converters, calculators, SEO, text, developer tools, and more. Fast, responsive, and easy to use.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div data-include="header.html"></div>
+
+  <main class="container my-5">
+    <!-- Tool Categories -->
+    <section id="image-tools">
+      <h2 class="mb-4">Image Tools</h2>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+        <!-- Dynamically generated tool cards will go here -->
+      </div>
+    </section>
+    <div class="ad-space">Ad Space (728x90)</div>
+
+    <section id="seo-tools" class="mt-5">
+      <h2 class="mb-4">SEO Tools</h2>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+        <!-- Dynamically generated tool cards will go here -->
+      </div>
+    </section>
+    <div class="ad-space">Ad Space (728x90)</div>
+
+    <section id="text-tools" class="mt-5">
+      <h2 class="mb-4">Text Tools</h2>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+        <!-- Dynamically generated tool cards will go here -->
+      </div>
+    </section>
+    <div class="ad-space">Ad Space (728x90)</div>
+
+    <section id="unit-tools" class="mt-5">
+      <h2 class="mb-4">Unit & Measurement</h2>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+        <!-- Dynamically generated tool cards will go here -->
+      </div>
+    </section>
+    <div class="ad-space">Ad Space (728x90)</div>
+    
+    <!-- Add more sections for other categories -->
+
+  </main>
+
+  <div data-include="footer.html"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/include.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tools = [
+        // Image Tools
+        { name: 'Image to PNG', href: 'image-to-png.html', icon: 'PNG', category: 'image-tools', color: '#0d6efd' },
+        { name: 'Image to JPG', href: 'image-to-jpg.html', icon: 'JPG', category: 'image-tools', color: '#0d6efd' },
+        { name: 'Image Resizer', href: 'image-resizer.html', icon: 'RESIZE', category: 'image-tools', color: '#0d6efd' },
+        { name: 'Image Compressor', href: 'image-compressor.html', icon: 'COMP', category: 'image-tools', color: '#0d6efd' },
+        { name: 'Image Cropper', href: 'image-cropper.html', icon: 'CROP', category: 'image-tools', color: '#0d6efd' },
+        { name: 'Image to Base64', href: 'image-to-base64.html', icon: 'B64', category: 'image-tools', color: '#0d6efd' },
+        { name: 'WebP to PNG', href: 'webp-to-png.html', icon: 'WEBP', category: 'image-tools', color: '#0d6efd' },
+        { name: 'GIF Maker', href: 'gif-maker.html', icon: 'GIF', category: 'image-tools', color: '#0d6efd' },
+        { name: 'QR Code Generator', href: 'qr-code-generator.html', icon: 'QR', category: 'image-tools', color: '#0d6efd' },
+        { name: 'Screenshot to PDF', href: 'screenshot-to-pdf.html', icon: 'PDF', category: 'image-tools', color: '#0d6efd' },
+
+        // SEO Tools
+        { name: 'Meta Tag Generator', href: 'meta-tag-generator.html', icon: 'META', category: 'seo-tools', color: '#198754' },
+        { name: 'Keyword Density', href: 'keyword-density-checker.html', icon: 'SEO', category: 'seo-tools', color: '#198754' },
+        { name: 'Sitemap Generator', href: 'sitemap-generator.html', icon: 'MAP', category: 'seo-tools', color: '#198754' },
+        { name: 'Robots.txt Generator', href: 'robots-txt-generator.html', icon: 'ROBOT', category: 'seo-tools', color: '#198754' },
+
+        // Text Tools
+        { name: 'Character Counter', href: 'character-counter.html', icon: 'CHAR', category: 'text-tools', color: '#6f42c1' },
+        { name: 'Case Converter', href: 'case-converter.html', icon: 'CASE', category: 'text-tools', color: '#6f42c1' },
+        { name: 'URL Encoder/Decoder', href: 'url-encoder-decoder.html', icon: 'URL', category: 'text-tools', color: '#6f42c1' },
+        { name: 'Random Text Generator', href: 'random-text-generator.html', icon: 'TEXT', category: 'text-tools', color: '#6f42c1' },
+        { name: 'Word Counter', href: 'word-counter.html', icon: 'WORD', category: 'text-tools', color: '#6f42c1' },
+
+        // Unit & Measurement Tools
+        { name: 'Length Converter', href: 'length-converter.html', icon: 'LEN', category: 'unit-tools', color: '#fd7e14' },
+        { name: 'Weight Converter', href: 'weight-converter.html', icon: 'KG', category: 'unit-tools', color: '#fd7e14' },
+        { name: 'Temperature Converter', href: 'temperature-converter.html', icon: '°C', category: 'unit-tools', color: '#fd7e14' },
+        { name: 'Data Storage Converter', href: 'data-storage-converter.html', icon: 'MB', category: 'unit-tools', color: '#fd7e14' },
+        // ... add all 100 tools here
+      ];
+
+      tools.forEach(tool => {
+        const categoryContainer = document.querySelector(`#${tool.category} .row`);
+        if (categoryContainer) {
+          const cardHTML = `
+            <div class="col tool-card-container">
+              <div class="card tool-card h-100">
+                <a href="tools/${tool.href}" class="text-decoration-none text-dark d-flex flex-column justify-content-center align-items-center text-center p-3">
+                  <span>
+                    <svg viewBox="0 0 48 48" width="48" height="48"><rect width="48" height="48" rx="10" fill="${tool.color}"/><text x="50%" y="55%" text-anchor="middle" fill="#fff" font-size="12" font-family="Arial" dy=".3em">${tool.icon}</text></svg>
+                  </span>
+                  <div class="card-body">
+                    <h5 class="card-title fs-6">${tool.name}</h5>
+                  </div>
+                </a>
+              </div>
+            </div>`;
+          categoryContainer.innerHTML += cardHTML;
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
